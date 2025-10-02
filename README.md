@@ -4,7 +4,9 @@
 
 El script `login_bot.py` abre la página de inicio de sesión de CEDSa Postítulos,
 carga el usuario y la contraseña desde un archivo de texto y presiona el botón
-**Acceder**.
+**Acceder**. Luego ingresa a la página principal de Postítulos, espera 10
+segundos y abre la diplomatura **“DIPLOMATURA SUPERIOR EN PROGRAMACIÓN Y
+ROBÓTICA | 2DO INICIO 2025”**.
 
 ### Requisitos
 
