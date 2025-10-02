@@ -101,6 +101,30 @@ def create_driver(headless: bool = True) -> webdriver.Chrome:
     return webdriver.Chrome(service=service, options=options)
 
 
+def fetch_assignment_statistics(
+    driver: webdriver.Chrome, wait: WebDriverWait
+) -> dict[str, str]:
+    """Return the statistics table values from the assignment page."""
+    table = wait.until(
+        EC.presence_of_element_located(
+            (By.CSS_SELECTOR, "table.generaltable.table-bordered")
+        )
+    )
+
+    stats: dict[str, str] = {}
+    for row in table.find_elements(By.CSS_SELECTOR, "tr"):
+        headers = row.find_elements(By.CSS_SELECTOR, "th")
+        values = row.find_elements(By.CSS_SELECTOR, "td")
+        if not headers or not values:
+            continue
+        heading = headers[0].text.strip()
+        value = values[0].text.strip()
+        if heading:
+            stats[heading] = value
+
+    return stats
+
+
 def login(credentials_path: Path, headless: bool = True) -> None:
     """Automate the login process using the supplied credentials file."""
     username, password = load_credentials(credentials_path)
@@ -145,6 +169,13 @@ def login(credentials_path: Path, headless: bool = True) -> None:
         wait.until(EC.url_to_be(ASSIGNMENT_URL))
         print(
             "Opened the assignment page. Waiting 10 seconds before starting the navigation loop..."
+        )
+        stats = fetch_assignment_statistics(driver, wait)
+        print("Assignment statistics:")
+        print(f"Participantes: {stats.get('Participantes', 'N/D')}")
+        print(f"Enviados: {stats.get('Enviados', 'N/D')}")
+        print(
+            f"Pendientes por calificar: {stats.get('Pendientes por calificar', 'N/D')}"
         )
         time.sleep(10)
 
