@@ -114,6 +114,17 @@ def login(credentials_path: Path, headless: bool = True) -> None:
         # Optionally wait for navigation or additional steps here.
         wait.until(lambda drv: drv.current_url != LOGIN_URL)
         print("Login attempt submitted.")
+        if not headless:
+            print(
+                "The browser window will remain open so you can verify the login."
+                " Close it manually or press Enter here to exit."
+            )
+            try:
+                input("Press Enter to close the browser...")
+            except EOFError:
+                # When stdin is not available, fall back to waiting for the user
+                # to close the window manually.
+                print("No interactive input available; close the browser window manually.")
     finally:
         driver.quit()
 
