@@ -41,6 +41,12 @@ COURSE_HOME_URL = (
 MODULE_ONE_URL = (
     "https://campusvirtual.cedsa.edu.ar/postitulo/course/view.php?id=94&section=4"
 )
+RECOVERY_MODULE_URL = (
+    "https://campusvirtual.cedsa.edu.ar/postitulo/course/view.php?id=94&section=3"
+)
+ASSIGNMENT_URL = (
+    "https://campusvirtual.cedsa.edu.ar/postitulo/mod/assign/view.php?id=16088"
+)
 TEN_MINUTES_SECONDS = 10 * 60
 USERNAME_FIELD_ID = "username"
 PASSWORD_FIELD_ID = "password"
@@ -130,6 +136,20 @@ def login(credentials_path: Path, headless: bool = True) -> None:
         driver.get(COURSE_HOME_URL)
         wait.until(EC.url_to_be(COURSE_HOME_URL))
         print("Opened the diplomatura course page.")
+
+        driver.get(RECOVERY_MODULE_URL)
+        wait.until(EC.url_to_be(RECOVERY_MODULE_URL))
+        print("Opened the recovery module page.")
+
+        driver.get(ASSIGNMENT_URL)
+        wait.until(EC.url_to_be(ASSIGNMENT_URL))
+        print(
+            "Opened the assignment page. Waiting 10 seconds before starting the navigation loop..."
+        )
+        time.sleep(10)
+
+        driver.get(COURSE_HOME_URL)
+        wait.until(EC.url_to_be(COURSE_HOME_URL))
 
         print(
             "Starting 10-minute navigation loop between the course home and Module 1."
