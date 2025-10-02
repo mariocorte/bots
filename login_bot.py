@@ -1,7 +1,9 @@
 """Automate login to the CEDSa Postítulos campus page.
 
 This script opens the login page, fills the username and password fields with
-values loaded from a credentials file, and clicks the "Acceder" button.
+values loaded from a credentials file, and clicks the "Acceder" button. After
+signing in it visits the postítulo home, waits 10 seconds, and opens the
+"Diplomatura Superior en Programación y Robótica" course page.
 
 The credentials file must contain two lines in the form:
 
@@ -18,6 +20,7 @@ browser window.
 from __future__ import annotations
 
 import argparse
+import time
 from pathlib import Path
 from typing import Tuple
 
@@ -30,6 +33,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 
 LOGIN_URL = "https://campusvirtual.cedsa.edu.ar/postitulo/login/index.php"
+POSTITULO_HOME_URL = "https://campusvirtual.cedsa.edu.ar/postitulo/"
+DIPLOMATURA_LINK_TEXT = (
+    "DIPLOMATURA SUPERIOR EN PROGRAMACIÓN Y ROBÓTICA | 2DO INICIO 2025"
+)
 USERNAME_FIELD_ID = "username"
 PASSWORD_FIELD_ID = "password"
 LOGIN_BUTTON_ID = "loginbtn"
@@ -114,6 +121,19 @@ def login(credentials_path: Path, headless: bool = True) -> None:
         # Optionally wait for navigation or additional steps here.
         wait.until(lambda drv: drv.current_url != LOGIN_URL)
         print("Login attempt submitted.")
+
+        driver.get(POSTITULO_HOME_URL)
+        wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+
+        print("Waiting 10 seconds before opening the diplomatura page...")
+        time.sleep(10)
+
+        diplomatura_link = wait.until(
+            EC.element_to_be_clickable((By.LINK_TEXT, DIPLOMATURA_LINK_TEXT))
+        )
+        diplomatura_link.click()
+        wait.until(EC.url_to_be("https://campusvirtual.cedsa.edu.ar/postitulo/course/view.php?id=94"))
+        print("Navigated to the diplomatura page.")
         if not headless:
             print(
                 "The browser window will remain open so you can verify the login."
